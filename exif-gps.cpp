@@ -44,6 +44,7 @@
 #include "exiv2/image.hpp"
 #include "exiv2/exif.hpp"
 #include "exiv2/error.hpp"
+#include <exiv2/exiv2.hpp>
 
 #include "gpsstructure.h"
 #include "exif-gps.h"
@@ -96,6 +97,13 @@ int main(int argc, char* argv[])
 
 char* ReadExifDate(const char* File, int* IncludesGPS)
 {
+	// Initialise Exiv2 library
+    Exiv2::XmpParser::initialize();
+    ::atexit(Exiv2::XmpParser::terminate);
+#ifdef EXV_ENABLE_BMFF
+    Exiv2::enableBMFF(true);
+#endif
+
 	// Open and read the file.
 	Exiv2::Image::AutoPtr Image;
 
@@ -131,7 +139,7 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 
 	// Copy the tag and return that.
 	char* Copy = strdup(Value.c_str());
-	
+
 	// Check if we have GPS tags.
 	Exiv2::Exifdatum& GPSData = ExifRead["Exif.GPSInfo.GPSLatitude"];
 
@@ -150,6 +158,13 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 
 char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, int* IncludesGPS)
 {
+	// Initialise Exiv2 library
+    Exiv2::XmpParser::initialize();
+    ::atexit(Exiv2::XmpParser::terminate);
+#ifdef EXV_ENABLE_BMFF
+    Exiv2::enableBMFF(true);
+#endif
+
 	// This function varies in that it reads
 	// much more data than the last, specifically
 	// for display purposes. For the GUI version.
@@ -169,7 +184,7 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 			 File, Exiv2::strError().c_str());
 		return NULL;
 	}
-	
+
 	Exiv2::ExifData &ExifRead = Image->exifData();
 
 	// Read the tag out.
@@ -188,7 +203,7 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 
 	// Copy the tag and return that.
 	char* Copy = strdup(Value.c_str());
-	
+
 	// Check if we have GPS tags.
 	*IncludesGPS = 0;
 	Exiv2::Exifdatum GPSData = ExifRead["Exif.GPSInfo.GPSVersionID"];
@@ -216,9 +231,9 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 	//    -- / 60 = result.
 	//     v
 	// ss/v is sorta easy.
-	//     ss   
+	//     ss
 	//     -- / 3600 = result
-	//      v   
+	//      v
 	// Each part is added to the final number.
 	Exiv2::URational RatNum;
 
@@ -243,7 +258,7 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 			*Lat = -*Lat;
 		}
 	}
-	
+
 	GPSData = ExifRead["Exif.GPSInfo.GPSLongitude"];
 	if (GPSData.count() < 3)
 		*Long = nan("invalid");
@@ -307,7 +322,7 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 			 File, Exiv2::strError().c_str());
 		return NULL;
 	}
-	
+
 	Exiv2::ExifData &ExifRead = Image->exifData();
 
 	// Read the tag out.
@@ -326,7 +341,7 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 
 	// Copy the tag and return that.
 	char* Copy = strdup(Value.c_str());
-	
+
 	// Check if we have GPS tags.
 	Exiv2::Exifdatum& GPSData = ExifRead["Exif.GPSInfo.GPSVersionID"];
 
@@ -356,7 +371,7 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 		RatNum3 = GPSData.toRational(2);
 		snprintf(TimeStamp, 12, "%02d:%02d:%02d",
 				RatNum1.first, RatNum2.first, RatNum3.first);
-		
+
 		GPSData = ExifRead["Exif.GPSInfo.GPSDateStamp"];
 		if (GPSData.count() < 3) {
 			*IncludesGPS = 0;
@@ -479,7 +494,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 			 File, Exiv2::strError().c_str());
 		return 0;
 	}
-	
+
 	Exiv2::ExifData &ExifToWrite = Image->exifData();
 
 	// Make sure we're starting from a clean GPS IFD.
@@ -499,7 +514,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	// Datum: the datum of the measured data. The default is WGS-84.
 	if (*Datum)
 		ExifToWrite["Exif.GPSInfo.GPSMapDatum"] = Datum;
-	
+
 	// Now start adding data.
 	// ALTITUDE.
 	// If no altitude was found in the GPX file, ElevDecimals will be -1
@@ -524,7 +539,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 		Value->read(ScratchBuf);
 		replace(ExifToWrite, Exiv2::ExifKey("Exif.GPSInfo.GPSAltitude"), Value.get());
 	}
-	
+
 	// LATITUDE
 	// Latitude reference: "N" or "S".
 	if (Point->Lat < 0)
@@ -569,7 +584,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	}
 	Value->read(ScratchBuf);
 	replace(ExifToWrite, Exiv2::ExifKey("Exif.GPSInfo.GPSLatitude"), Value.get());
-	
+
 	// LONGITUDE
 	// Longitude reference: "E" or "W".
 	if (Point->Long < 0)
@@ -631,7 +646,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	}
 
 	return 1;
-	
+
 }
 
 int WriteFixedDatestamp(const char* File, time_t Time)
@@ -659,9 +674,9 @@ int WriteFixedDatestamp(const char* File, time_t Time)
 			 File, Exiv2::strError().c_str());
 		return 0;
 	}
-	
+
 	Exiv2::ExifData &ExifToWrite = Image->exifData();
-	
+
 	const struct tm TimeStamp = *gmtime(&Time);
 	char ScratchBuf[100];
 
@@ -679,14 +694,14 @@ int WriteFixedDatestamp(const char* File, time_t Time)
 	Value->read(ScratchBuf);
 	ExifToWrite.erase(ExifToWrite.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSTimeStamp")));
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSTimeStamp"), Value.get());
-	
+
 	try {
 		Image->writeMetadata();
 	} catch (Exiv2::Error& e) {
 		DEBUGLOG("Failed to write to file %s.\n", File);
 		return 0;
 	}
-	
+
 	// Reset the mtime.
 	stat(File, &statbuf2);
 	utb.actime = statbuf2.st_atime;
@@ -706,7 +721,7 @@ int RemoveGPSExif(const char* File, int NoChangeMtime, int NoWriteExif)
 
 	// Open the file and start reading.
 	Exiv2::Image::AutoPtr Image;
-	
+
 	try {
 		Image = Exiv2::ImageFactory::open(File);
 	} catch (Exiv2::Error& e) {
@@ -731,7 +746,7 @@ int RemoveGPSExif(const char* File, int NoChangeMtime, int NoWriteExif)
 	}
 
 	EraseGpsTags(ExifInfo);
-	
+
 	if (!NoWriteExif) {
 		try {
 			Image->writeMetadata();
