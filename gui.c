@@ -873,6 +873,12 @@ void AddPhotosButtonPress( GtkWidget *Widget, gpointer Data )
 		gtk_file_filter_set_name(JpgFilter, _("JPEG images"));
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(AddPhotosDialog), JpgFilter);
 	}
+	GtkFileFilter *RawFilter = gtk_file_filter_new();
+	if (RawFilter) {
+		gtk_file_filter_add_pattern(RawFilter, "*.[cC][rR][wW23]");
+		gtk_file_filter_set_name(RawFilter, _("RAW images"));
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(AddPhotosDialog), RawFilter);
+	}
 	GtkFileFilter *AllFilter = gtk_file_filter_new();
 	if (AllFilter) {
 		gtk_file_filter_add_pattern(AllFilter, "*");
