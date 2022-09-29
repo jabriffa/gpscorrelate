@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
 };
 */
 
-char* ReadExifDate(const char* File, int* IncludesGPS)
+void InitializeExiv2()
 {
 	// Initialise Exiv2 library
     Exiv2::XmpParser::initialize();
@@ -103,7 +103,10 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 #ifdef EXV_ENABLE_BMFF
     Exiv2::enableBMFF(true);
 #endif
+}
 
+char* ReadExifDate(const char* File, int* IncludesGPS)
+{
 	// Open and read the file.
 	Exiv2::Image::AutoPtr Image;
 
@@ -158,13 +161,6 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 
 char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, int* IncludesGPS)
 {
-	// Initialise Exiv2 library
-    Exiv2::XmpParser::initialize();
-    ::atexit(Exiv2::XmpParser::terminate);
-#ifdef EXV_ENABLE_BMFF
-    Exiv2::enableBMFF(true);
-#endif
-
 	// This function varies in that it reads
 	// much more data than the last, specifically
 	// for display purposes. For the GUI version.

@@ -279,7 +279,7 @@ static void ShowFileDone(enum OutputFormat Format)
 			   "</gpx>\n");
 	}
 }
-			
+
 /* Remove all GPS exif tags from a file. Not really that useful, but... */
 static int RemoveGPSTags(const char* File, int NoChangeMtime, int NoWriteExif)
 {
@@ -318,7 +318,7 @@ static int FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMin
 		/* Check the timestamp. */
 		time_t PhotoTime = ConvertToUnixTime(OriginalDateStamp, EXIF_DATE_FORMAT,
 			AdjustmentHours, AdjustmentMinutes);
-		
+
 		snprintf(CombinedTime, sizeof(CombinedTime), "%s %s", DateStamp, TimeStamp);
 
 		time_t GPSTime = ConvertToUnixTime(CombinedTime, EXIF_DATE_FORMAT, 0, 0);
@@ -354,6 +354,8 @@ static int FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMin
 
 int main(int argc, char** argv)
 {
+	InitializeExiv2();
+
 	/* Initialize locale & gettext */
 	setlocale (LC_ALL, "");
 	(void) bindtextdomain(TEXTDOMAIN, PACKAGE_LOCALE_DIR);
@@ -370,7 +372,7 @@ int main(int argc, char** argv)
 	/* Parse our command line options. */
 	/* But first, some variables to store stuff in. */
 	int c;
-	
+
 	struct GPSTrack* Track = NULL;/* Array of lists of GPS waypoints. The
 					 final entry of all 0 signals the end. */
 	int NumTracks = 0;	     /* Number of track structures at Track,
@@ -591,7 +593,7 @@ int main(int argc, char** argv)
 				break;
 		} /* End switch(c) */
 	} /* End While(1) */
-	
+
 	/* Check to see if the user passed some files to work with. Not much
 	 * good if they didn't. */
 	if (optind < argc)
@@ -658,7 +660,7 @@ int main(int argc, char** argv)
 			fprintf(stderr, _("A time offset must be given with the -z option to fix photos.\n"));
 			exit(EXIT_FAILURE);
 		}
-		
+
 		int result = 1;
 		while (optind < argc)
 		{
@@ -688,7 +690,7 @@ int main(int argc, char** argv)
 	/* Make it all look nice and pretty... so the user knows what's going on. */
 	printf(_("\nCorrelate: "));
 	if (ShowDetails) printf("\n");
-	
+
 	/* A few variables that we'll require later. */
 	struct GPSPoint* Result;
 	char* File;
@@ -819,9 +821,9 @@ int main(int argc, char** argv)
 
 		/* And, once we've got here, we've finished with that file.
 		 * We can now do the next one. Now wasn't that too easy? */
-		
+
 	} /* End while parse command line files. */
-	
+
 	/* Right, so now we're done. That really wasn't that hard. Right? */
 
 	/* Add a new line if we were doing the not-show-details thing. */
@@ -856,7 +858,7 @@ int main(int argc, char** argv)
 	}
 	free(Track);
 	free(Datum);
-	
+
 	if (WriteFail)
 		/* A write failure is considered serious */
 		return EXIT_FAILURE;
@@ -866,4 +868,3 @@ int main(int argc, char** argv)
 	 */
 	return(NotMatched + TooFar + NoDate + GPSPresent ? GPS_EXIT_WARNING : EXIT_SUCCESS);
 }
-

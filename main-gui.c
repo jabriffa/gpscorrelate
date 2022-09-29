@@ -39,6 +39,8 @@
 
 int main(int argc, char* argv[])
 {
+	InitializeExiv2();
+
 	/* Initialize gettext (gtk_init initializes the locale) */
 	(void) bindtextdomain(TEXTDOMAIN, PACKAGE_LOCALE_DIR);
 	(void) textdomain(TEXTDOMAIN);
@@ -56,4 +58,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-
