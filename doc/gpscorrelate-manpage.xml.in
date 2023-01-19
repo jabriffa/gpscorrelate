@@ -200,9 +200,13 @@
     <para> If GPS data are available at the precise moment the image was taken
       (with a 1-second granularity) the GPS data are stored unmodified in EXIF
       fields. If they are not, linear interpolation of GPS data available at
-      moments before and after the image was taken can be used.  A measure of
-      the approximate accuracy of the GPS location reading is preserved when
-      written into the image.</para>
+      moments before and after the image was taken can be used. Linear
+      interpolation gives good results when points are close together, but if
+      they are several kilometres apart on an airplane route, it will introduce
+      some error versus the great circle route an airplane flies. A measure of
+      the approximate accuracy of the GPS location reading is preserved
+      when written into the image.
+    </para>
 
   </refsect1>
   <refsect1>
