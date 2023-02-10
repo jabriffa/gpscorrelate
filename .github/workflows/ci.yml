@@ -77,7 +77,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: 'install deps'
-      run: sudo apt-get update -y; sudo apt-get install -y ${{ matrix.build.install }}
+      run: sudo apt-get update -y; sudo apt-get install -y --no-install-suggests --no-install-recommends ${{ matrix.build.install }}
     - name: 'build'
       run: make CFLAGS="${{ matrix.build.cflags }}" LDFLAGS="${{ matrix.build.ldflags }}" CC="${{ matrix.build.cc }}" CXX="${{ matrix.build.cxx }}" GTK="${{ matrix.build.gtk }}" ${{ matrix.build.make_opts }} ${{ matrix.build.target }}
     - name: 'smoke test'
@@ -103,14 +103,14 @@ jobs:
         build:
         - cc: gcc
           gtk: 2
-          install: desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev xsltproc
+          install: desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev xsltproc gettext
           cflags: -Wall -Wextra -Werror -Wno-error=deprecated-declarations -O3 -DENABLE_NLS=1
           cxx: g++
           target: all
           install_target: install install-po install-desktop-file
         - cc: clang
           gtk: 2
-          install: desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev xsltproc
+          install: desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev xsltproc gettext
           cflags: -Wall -Wextra -Werror -Wno-error=deprecated-declarations -O3 -DENABLE_NLS=1
           cxx: clang++
           target: all
@@ -156,7 +156,7 @@ jobs:
           failing_tests: 16
         - cc: gcc-8
           gtk: 2
-          install: desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev xsltproc gcc-8
+          install: desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev xsltproc gettext gcc-8
           cflags: -Wall -Wextra -Werror -Wno-error=deprecated-declarations -O3 -DENABLE_NLS=1
           cxx: g++
           target: all
@@ -170,21 +170,21 @@ jobs:
           install_target: install install-po install-desktop-file
         - cc: clang-8
           gtk: 2
-          install: clang-8 desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev xsltproc
+          install: clang-8 desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev gettext xsltproc
           cflags: -Wall -Wextra -Werror -Wno-error=deprecated-declarations -O3 -DENABLE_NLS=1
           cxx: clang++-8
           target: all
           install_target: install install-po install-desktop-file
         - cc: clang-9
           gtk: 2
-          install: clang-9 desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev xsltproc
+          install: clang-9 desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev gettext xsltproc
           cflags: -Wall -Wextra -Werror -Wno-error=deprecated-declarations -O3 -DENABLE_NLS=1
           cxx: clang++-9
           target: all
           install_target: install install-po install-desktop-file
         - cc: clang-10
           gtk: 2
-          install: clang-10 desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev xsltproc
+          install: clang-10 desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk2.0-dev gettext xsltproc
           cflags: -Wall -Wextra -Werror -Wno-error=deprecated-declarations -O3 -DENABLE_NLS=1
           cxx: clang++-10
           target: all
@@ -201,7 +201,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: 'install deps'
-      run: sudo apt-get update -y; sudo apt-get install -y ${{ matrix.build.install }}
+      run: sudo apt-get update -y; sudo apt-get install -y --no-install-suggests --no-install-recommends ${{ matrix.build.install }}
     - name: 'build'
       run: make CFLAGS="${{ matrix.build.cflags }}" LDFLAGS="${{ matrix.build.ldflags }}" CC="${{ matrix.build.cc }}" CXX="${{ matrix.build.cxx }}" GTK="${{ matrix.build.gtk }}" ${{ matrix.build.make_opts }} ${{ matrix.build.target }}
     - name: 'smoke test'
@@ -234,7 +234,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: 'install deps'
-      run: sudo apt-get update -y; sudo apt-get install -y ${{ matrix.build.install }}
+      run: sudo apt-get update -y; sudo apt-get install -y --no-install-suggests --no-install-recommends ${{ matrix.build.install }}
     - name: 'build'
       run: make CFLAGS="${{ matrix.build.cflags }}" LDFLAGS="${{ matrix.build.ldflags }}" CC="${{ matrix.build.cc }}" CXX="${{ matrix.build.cxx }}" GTK="${{ matrix.build.gtk }}" ${{ matrix.build.make_opts }} ${{ matrix.build.target }}
     - name: 'smoke test'

@@ -62,7 +62,7 @@ linux_arm_task:
 
   pkginstall_script:
     - uname -a
-    - apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk${GTK/3/-}${GTK/2/.0}-dev xsltproc libxml++2.6-dev gettext
+    - apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-suggests --no-install-recommends build-essential desktop-file-utils docbook-xsl exiv2 libexiv2-dev libgtk${GTK/3/-}${GTK/2/.0}-dev xsltproc libxml++2.6-dev gettext
       # Create a user for running tests
     - adduser build
 
@@ -85,7 +85,7 @@ linux_musl_task:
   name: Linux MUSL
   container:
     image: alpine:3.17
-    memory: 400M
+    memory: 600M
 
   env:
     # Set to 10 instead of 1 to avoid problems when new commits are submitted
