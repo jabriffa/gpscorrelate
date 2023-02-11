@@ -369,3 +369,40 @@ jobs:
         fi
     - name: install test
       run: make prefix= DESTDIR="${PWD}" ${{ matrix.build.install_target }}
+
+  build-fedora37:
+    runs-on: ubuntu-latest
+    container: fedora:37
+    strategy:
+      fail-fast: false
+      matrix:
+        build:
+        - cc: gcc
+          gtk: 3
+          install: gcc g++ make diffutils desktop-file-utils docbook-style-xsl exiv2 exiv2-devel gtk3-devel xsltproc gettext-devel
+          cflags: -Wall -Wextra -Werror -Wno-error=deprecated-declarations -O3 -DENABLE_NLS=1
+          cxx: g++
+          target: all
+          install_target: install install-po install-desktop-file
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: install deps
+      run: |
+        dnf install -y --setopt=install_weak_deps=False ${{ matrix.build.install }}
+    - name: build
+      run: make CFLAGS="${{ matrix.build.cflags }}" LDFLAGS="${{ matrix.build.ldflags }}" CC="${{ matrix.build.cc }}" CXX="${{ matrix.build.cxx }}" GTK="${{ matrix.build.gtk }}" ${{ matrix.build.make_opts }} ${{ matrix.build.target }}
+    - name: smoke test
+      run: ./gpscorrelate -V
+    - name: test
+      run: |
+        install -d -m 0777 tests/log
+        if [[ -z "${{ matrix.build.failing_tests }}" ]] ; then
+          sudo -u nobody make check CHECK_OPTIONS=-v ASAN_OPTIONS="${{ matrix.build.asan_options }}"
+        else
+          # Debug logging enabled makes some tests fail due to differing output
+          echo 'Expecting ${{ matrix.build.failing_tests }} test failures'
+          sudo -u nobody make check CHECK_OPTIONS=-v | tee /dev/stderr | grep -q '${{ matrix.build.failing_tests }} test(s) have FAILED'
+        fi
+    - name: install test
+      run: make prefix= DESTDIR="${PWD}" ${{ matrix.build.install_target }}
