@@ -9,6 +9,9 @@ on:
     # monthly analysis
     - cron: "47 0 15 * *"
 
+permissions:
+  contents: read
+
 jobs:
   analyze:
     name: Analyze
