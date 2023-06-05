@@ -84,7 +84,7 @@ linux_arm_task:
 linux_musl_task:
   name: Linux MUSL
   container:
-    image: alpine:3.17
+    image: alpine:3.18
     memory: 600M
 
   env:
