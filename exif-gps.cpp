@@ -629,6 +629,8 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	try {
 		Image->writeMetadata();
 	} catch (Exiv2::Error& e) {
+		std::cerr << "Failed to write to file " << File << std::endl;
+		std::cerr << e.what() << std::endl;
 		DEBUGLOG("Failed to write to file %s.\n", File);
 		return 0;
 	}
